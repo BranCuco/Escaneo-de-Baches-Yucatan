@@ -7,6 +7,7 @@ const STORAGE_KEY = 'baches-reports'
 
 export default function App() {
   const [reports, setReports] = useState([])
+  const [selectedLocation, setSelectedLocation] = useState(null)
 
   useEffect(() => {
     try {
@@ -25,6 +26,10 @@ export default function App() {
     setReports((s) => [report, ...s])
   }
 
+  function setLocation(loc) {
+    setSelectedLocation(loc)
+  }
+
   function removeReport(id) {
     setReports((s) => s.filter(r => r.id !== id))
   }
@@ -37,12 +42,12 @@ export default function App() {
 
       <main>
         <section className="left">
-          <ReportForm onSubmit={addReport} />
+          <ReportForm onSubmit={(r) => addReport({ ...r, location: selectedLocation || r.location })} selectedLocation={selectedLocation} onClearLocation={() => setSelectedLocation(null)} />
           <ReportList reports={reports} onRemove={removeReport} />
         </section>
 
         <aside className="right">
-          <MapPlaceholder />
+          <MapPlaceholder reports={reports} selected={selectedLocation} onSelect={setLocation} />
         </aside>
       </main>
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 function formatDate(iso) {
   try {
@@ -9,6 +9,8 @@ function formatDate(iso) {
 }
 
 export default function ReportList({ reports, onRemove }) {
+  const [preview, setPreview] = useState(null)
+
   return (
     <div className="report-list">
       <h2>Reportes ({reports.length})</h2>
@@ -21,12 +23,26 @@ export default function ReportList({ reports, onRemove }) {
               <time>{formatDate(r.createdAt)}</time>
             </div>
             <p className="desc">{r.description}</p>
+            {r.location && (
+              <div className="location">Ubicación: {r.location.lat}, {r.location.lng}</div>
+            )}
+            {r.photo && (
+              <div className="photo-thumb">
+                <img src={r.photo} alt="foto" onClick={() => setPreview(r.photo)} />
+              </div>
+            )}
             <div className="actions">
               <button onClick={() => onRemove(r.id)}>Eliminar</button>
             </div>
           </li>
         ))}
       </ul>
+
+      {preview && (
+        <div className="image-modal" onClick={() => setPreview(null)}>
+          <img src={preview} alt="preview large" />
+        </div>
+      )}
     </div>
   )
 }
