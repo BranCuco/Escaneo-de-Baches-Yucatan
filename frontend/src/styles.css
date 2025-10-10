@@ -1,0 +1,27 @@
+:root{
+  --bg: #fff;
+  --fg: #000;
+  --muted: #666;
+}
+*{box-sizing:border-box}
+body{font-family:Inter,Segoe UI,Arial;background:var(--bg);color:var(--fg);margin:0;padding:0}
+.app-root{max-width:1000px;margin:24px auto;padding:16px}
+header h1{font-size:1.2rem;margin:0 0 12px}
+main{display:flex;gap:16px}
+.left{flex:1}
+.right{width:360px}
+.report-form,label{display:block}
+.report-form textarea{width:100%;padding:8px;margin-top:6px}
+.report-form select{width:100%;padding:6px;margin-top:6px}
+.form-actions{margin-top:8px}
+button{background:#000;color:#fff;border:none;padding:8px 12px;cursor:pointer}
+button:active{transform:translateY(1px)}
+.report-list ul{list-style:none;padding:0;margin:8px 0}
+.report-item{border:1px solid #000;padding:8px;margin-bottom:8px}
+.report-item.low{border-left:6px solid #666}
+.report-item.medium{border-left:6px solid #000}
+.report-item.high{border-left:6px solid #000}
+.report-item .meta{display:flex;justify-content:space-between;font-size:0.85rem;color:var(--muted)}
+.map-placeholder{border:1px dashed #000;padding:8px;text-align:center}
+.map-inner{height:220px;background:#f8f8f8;color:#000;display:flex;align-items:center;justify-content:center}
+footer{text-align:center;margin-top:12px;color:var(--muted)}
