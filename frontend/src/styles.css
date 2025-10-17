@@ -38,3 +38,62 @@ input[type="file"]{margin-top:6px}
 .selected-location{margin-top:8px;padding:8px;border:1px dashed #000}
 .selected-location.muted{color:var(--muted);font-size:0.95rem}
 .map-placeholder{width:100%}
+
+.login-root{display:flex;align-items:center;justify-content:center;height:70vh}
+.login-form{width:320px;border:1px solid #000;padding:12px}
+.login-form label{display:block;margin-top:8px}
+.auth-area{position:absolute;right:24px;top:18px}
+
+.tabs{display:flex;gap:8px;margin-bottom:8px}
+.tabs button{flex:1;padding:6px;border:1px solid #000;background:#fff;cursor:pointer}
+.tabs button.active{background:#000;color:#fff}
+
+.login-form{width:360px;border:1px solid #000;padding:18px;background:#fff}
+.login-form .field{margin-bottom:10px}
+.login-form label{font-weight:600;display:block;margin-bottom:6px}
+.login-form input{width:100%;padding:8px;border:1px solid #aaa}
+.field-error{color:#900;margin-top:4px;font-size:0.9rem}
+.password-row{display:flex;gap:8px}
+.password-row input{flex:1}
+.small{background:#eee;color:#000;padding:6px;border:1px solid #aaa;cursor:pointer}
+.small:active{transform:translateY(1px)}
+.pw-strength{font-size:0.85rem;color:var(--muted);margin-top:6px}
+.form-actions{display:flex;justify-content:flex-end}
+.form-actions button{padding:8px 14px}
+
+/* Auth card styles */
+.auth-page{display:flex;align-items:center;justify-content:center;height:80vh}
+.auth-card{width:420px;border:1px solid #ddd;padding:18px;background:#fff}
+.auth-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.auth-header h3{margin:0}
+.muted{color:var(--muted);font-size:0.9rem}
+.link{background:none;border:none;color:#19b5a7;cursor:pointer;padding:0}
+.auth-body{padding:6px 0}
+.auth-form{display:flex;flex-direction:column;gap:10px}
+.input{padding:10px;border:1px solid #ccc}
+.checkbox{font-size:0.9rem}
+.primary-btn{background:#19b5a7;color:#fff;border:none;padding:12px;font-weight:700;cursor:pointer}
+.auth-footer{text-align:center;margin-top:10px}
+.auth-card .form-error{background:#f8d7da;color:#842029;padding:8px;margin-bottom:8px;border:1px solid #f5c2c7}
+
+.auth-logo{display:block;margin:0 auto 8px;width:78px;height:78px}
+
+/* Sidebar layout */
+.app-with-sidebar .workspace{display:flex;gap:16px}
+.sidebar{width:220px;border-right:1px solid #e6e6e6;padding:22px 14px;background:#f4fbfb}
+.sidebar{position:fixed;left:0;top:0;height:100vh;box-shadow:2px 0 12px rgba(0,0,0,0.06);z-index:1000}
+.profile{text-align:center;padding-bottom:12px}
+.profile-avatar{width:72px;height:72px;border-radius:8px}
+.profile-name{font-weight:700;margin-top:8px;color:#0b4461;font-size:0.98rem}
+.profile-email{font-size:0.85rem;color:#2b4b4f;opacity:0.9}
+.nav{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.nav-item{background:none;border:none;text-align:left;padding:10px 12px;cursor:pointer;border-radius:6px;color:#23484b;font-weight:600}
+.nav-item:hover{background:#e9f7f6}
+.nav-item.active{background:#dff3f1}
+.content{flex:1;padding:18px;margin-left:0}
+.app-with-sidebar header{margin-left:220px}
+.app-with-sidebar footer{margin-left:220px}
+.app-with-sidebar .workspace{margin-left:220px}
+.reports-page{display:flex;gap:16px}
+.reports-page .left{flex:1}
+.reports-page .right{width:420px}

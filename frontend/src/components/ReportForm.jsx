@@ -52,9 +52,9 @@ export default function ReportForm({ onSubmit, selectedLocation, onClearLocation
       <label>
         Severidad
         <select value={severity} onChange={(e) => setSeverity(e.target.value)}>
-          <option value="low">Baja</option>
-          <option value="medium">Media</option>
-          <option value="high">Alta</option>
+          <option value="Baja">Baja</option>
+          <option value="Media">Media</option>
+          <option value="Alta">Alta</option>
         </select>
       </label>
 
@@ -65,10 +65,10 @@ export default function ReportForm({ onSubmit, selectedLocation, onClearLocation
           {onClearLocation && <button type="button" onClick={onClearLocation}>Limpiar ubicación</button>}
         </div>
       ) : (
-        <div className="selected-location muted">Haga click en el mapa para seleccionar ubicación (opcional)</div>
+        <div className="selected-location muted">Haga click en el mapa para seleccionar ubicación </div>
       )}
       <label>
-        Foto (opcional)
+        Foto
         <input type="file" accept="image/*" onChange={handlePhoto} />
       </label>
       {photoData && <div className="photo-preview"><img src={photoData} alt="preview" /></div>}
