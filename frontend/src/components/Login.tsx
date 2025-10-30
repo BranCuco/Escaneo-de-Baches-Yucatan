@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import type { Auth } from '../types'
+import { writeAuth } from '../utils/auth'
 
 async function sha256(text: string) {
   const enc = new TextEncoder()
@@ -51,14 +52,24 @@ export default function Login({ onLogin }: Props) {
     if (!username) errs.username = 'Usuario requerido'
     if (!password) errs.password = 'Contraseña requerida'
     if (Object.keys(errs).length) return setFieldErrors(errs)
-    const users = readUsers()
-    const user = users.find((u: any) => u.username === username)
-    if (!user) return setError('Usuario no encontrado')
-    const h = await sha256(password)
-    if (h !== user.hash) return setError('Contraseña incorrecta')
-    const auth = { token: 'mock-' + Date.now().toString(36), user: username }
-    localStorage.setItem('baches-auth', JSON.stringify(auth))
-    onLogin(auth)
+    try {
+      const res = await fetch('https://baches-yucatan-1.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: username, password })
+      })
+      const data = await res.json()
+      if (!res.ok) return setError(data?.message || 'Login failed')
+      const token = data.token || data.data?.token || data.accessToken
+      const userEmail = data.user?.email || data.data?.user?.email || username
+      if (!token) return setError('Token not returned from server')
+      const auth: Auth = { token, user: userEmail }
+      writeAuth(auth)
+      onLogin(auth)
+    } catch (err) {
+      console.error(err)
+      setError('Error de conexión')
+    }
   }
 
   async function handleRegister(e: React.FormEvent) {
@@ -70,15 +81,27 @@ export default function Login({ onLogin }: Props) {
     if (!password) errs.password = 'Contraseña requerida'
     if (password !== confirm) errs.confirm = 'Las contraseñas no coinciden'
     if (Object.keys(errs).length) return setFieldErrors(errs)
-    const users = readUsers()
-    if (users.find((u: any) => u.username === username)) return setError('El usuario ya existe')
-    const h = await sha256(password)
-    users.push({ username, hash: h })
-    writeUsers(users)
-    // auto-login
-    const auth = { token: 'mock-' + Date.now().toString(36), user: username }
-    localStorage.setItem('baches-auth', JSON.stringify(auth))
-    onLogin(auth)
+    try {
+      // derive a simple name from email before @ if possible
+      const name = username.includes('@') ? username.split('@')[0] : username
+      const payload = { email: username, password, name, lastname: '' , role: 'worker' }
+      const res = await fetch('https://baches-yucatan-1.onrender.com/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      const data = await res.json()
+      if (!res.ok) return setError(data?.message || 'Register failed')
+      const token = data.token || data.data?.token || data.accessToken
+      const userEmail = data.user?.email || data.data?.user?.email || username
+      if (!token) return setError('Token not returned from server')
+      const auth: Auth = { token, user: userEmail }
+      writeAuth(auth)
+      onLogin(auth)
+    } catch (err) {
+      console.error(err)
+      setError('Error de conexión')
+    }
   }
 
   return (

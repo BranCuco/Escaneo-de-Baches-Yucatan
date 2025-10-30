@@ -11,10 +11,9 @@ function formatDate(iso: string) {
 
 type Props = {
   reports: Report[]
-  onRemove: (id: string) => void
 }
 
-export default function ReportList({ reports, onRemove }: Props) {
+export default function ReportList({ reports }: Props) {
   const [preview, setPreview] = useState<string | null>(null)
 
   return (
@@ -37,9 +36,7 @@ export default function ReportList({ reports, onRemove }: Props) {
                 <img src={r.photo} alt="foto" onClick={() => setPreview(r.photo || null)} />
               </div>
             )}
-            <div className="actions">
-              <button onClick={() => onRemove(r.id)}>Eliminar</button>
-            </div>
+            {/* read-only dashboard: no delete action */}
           </li>
         ))}
       </ul>

@@ -1,27 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import ReportForm from './components/ReportForm'
 import ReportList from './components/ReportList'
 import MapPlaceholder from './components/MapPlaceholder'
 import Login from './components/Login'
 import Sidebar from './components/Sidebar'
 import VehiculosTrabajadores from './components/VehiculosTrabajadores'
+import TestCreateReport from './components/TestCreateReport'
 import { readAuth, clearAuth } from './utils/auth'
 import type { Report, Location as Loc, Auth } from './types'
 
-const STORAGE_KEY = 'baches-reports'
-const getUserStorageKey = (user: string) => `${STORAGE_KEY}:${user}`
+const API_BASE = 'https://baches-yucatan-1.onrender.com/api'
 
 export default function App(): JSX.Element {
   const [reports, setReports] = useState<Report[]>([])
   const [selectedLocation, setSelectedLocation] = useState<Loc | null>(null)
   const [auth, setAuth] = useState<Auth | null>(null)
 
-  // Leer auth al montar y limpiar el key global antiguo (migración a por-usuario)
+  // Leer auth al montar
   useEffect(() => {
-    try {
-      // Limpia clave global antigua para evitar contaminación entre cuentas
-      localStorage.removeItem(STORAGE_KEY)
-    } catch {}
     try {
       const a = readAuth()
       if (a) setAuth(a)
@@ -30,36 +25,39 @@ export default function App(): JSX.Element {
     }
   }, [])
 
-  // Cargar reportes cuando cambia el usuario autenticado
-  useEffect(() => {
+  // Carga de reportes desde la API (extraída para poder llamarla desde otras partes)
+  const loadReports = React.useCallback(async () => {
     if (!auth) {
       setReports([])
       return
     }
     try {
-      const userKey = getUserStorageKey(auth.user)
-      const raw = localStorage.getItem(userKey)
-      setReports(raw ? JSON.parse(raw) : [])
+      const token = auth!.token
+      const res = await fetch(`${API_BASE}/reports`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      const items = data.reports || data.data || data || []
+      const normalized = (items as any[]).map(r => ({
+        id: r.id,
+        description: r.description || r.comments || '',
+        severity: r.severity || 'medium',
+        location: r.location ? r.location : (r.latitude !== undefined && r.longitude !== undefined ? { lat: r.latitude, lng: r.longitude } : null),
+        photo: Array.isArray(r.images) && r.images.length ? r.images[0] : (r.photo || null),
+        createdAt: r.createdAt || r.date || new Date().toISOString()
+      }))
+      setReports(normalized)
     } catch (e) {
-      console.warn('Error loading user reports', e)
+      console.error('Error loading reports from API', e)
       setReports([])
     }
-  }, [auth?.user])
+  }, [auth])
 
-  // Guardar reportes por-usuario
   useEffect(() => {
-    if (!auth) return
-    try {
-      const userKey = getUserStorageKey(auth.user)
-      localStorage.setItem(userKey, JSON.stringify(reports))
-    } catch (e) {
-      console.warn('Error saving user reports', e)
-    }
-  }, [reports, auth?.user])
+    loadReports()
+  }, [auth, loadReports])
 
-  function addReport(report: Report) {
-    setReports((s: Report[]) => [report, ...s])
-  }
+  // report creation removed: dashboard is read-only and reads from API
 
   function setLocation(loc: Loc | null) {
     setSelectedLocation(loc)
@@ -74,9 +72,7 @@ export default function App(): JSX.Element {
     setAuth(null)
   }
 
-  function removeReport(id: string) {
-    setReports((s: Report[]) => s.filter((r: Report) => r.id !== id))
-  }
+  // removal disabled in dashboard (read-only)
 
   const [currentPage, setCurrentPage] = useState<string>('reportes')
 
@@ -97,19 +93,30 @@ export default function App(): JSX.Element {
       </header>
 
       <div className="workspace">
-  <Sidebar user={displayName} email={displayEmail} currentPage={currentPage} onNavigate={navigate} />
+        <Sidebar user={displayName} email={displayEmail} currentPage={currentPage} onNavigate={navigate} />
 
-        <main className="content">
+        <main>
           {currentPage === 'reportes' && (
-            <div className="reports-page">
-              <section className="left">
-                <ReportForm onSubmit={(r) => addReport({ ...r, location: selectedLocation || r.location })} selectedLocation={selectedLocation} onClearLocation={() => setSelectedLocation(null)} />
-                <ReportList reports={reports} onRemove={removeReport} />
-              </section>
+            <div className="content">
+              <h2>Reportes</h2>
+              <div className="controls">
+                <button onClick={() => setCurrentPage('reportes')}>Reload</button>
+              </div>
+              <div className="report-section">
+                {/* Dashboard is read-only: reports come from the database via API */}
+                <div className="report-list-column">
+                  <ReportList reports={reports} />
+                </div>
+                <div className="report-map-column">
+                  <MapPlaceholder reports={reports} selected={selectedLocation} onSelect={setLocation} />
+                </div>
+              </div>
+            </div>
+          )}
 
-              <aside className="right">
-                <MapPlaceholder reports={reports} selected={selectedLocation} onSelect={setLocation} />
-              </aside>
+          {currentPage === 'crear' && (
+            <div className="create-page">
+              <TestCreateReport onCreated={(created) => { loadReports(); setCurrentPage('reportes') }} />
             </div>
           )}
 
@@ -121,9 +128,7 @@ export default function App(): JSX.Element {
         </main>
       </div>
 
-      <footer>
-        <small>Mockup — Datos guardados en localStorage</small>
-      </footer>
+    
     </div>
   )
 }
