@@ -38,9 +38,9 @@ export default function Login({ onLogin }: Props) {
   const [remember, setRemember] = useState(false)
 
   const logoData = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24">
-      <rect width="24" height="24" fill="#19b5a7" rx="4" />
-      <path d="M6 12c0-3.314 2.686-6 6-6s6 2.686 6 6-2.686 6-6 6-6-2.686-6-6zm3 0a3 3 0 106 0 3 3 0 00-6 0z" fill="#fff"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width="220" height="90" viewBox="0 0 220 90">
+      <rect x="0" y="0" width="220" height="90" rx="6" fill="#e6e6e6" />
+      <text x="110" y="52" font-family="Arial, sans-serif" font-size="20" fill="#777" text-anchor="middle">LOGO</text>
     </svg>
   `)
 
@@ -133,7 +133,7 @@ export default function Login({ onLogin }: Props) {
 
               <div className="password-row">
                 <input className="input" type={showPassword ? 'text' : 'password'} placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} />
-                <button type="button" className="small" onClick={() => setShowPassword(s => !s)}>{showPassword ? 'Hide' : 'Mostrar'}</button>
+                <button type="button" className="small show-btn" onClick={() => setShowPassword(s => !s)}>{showPassword ? 'Ocultar' : 'Mostrar'}</button>
               </div>
               {fieldErrors.password && <div className="field-error">{fieldErrors.password}</div>}
 
