@@ -36,7 +36,7 @@ export default function MapPlaceholder({ reports = [], selected, onSelect }: Pro
 
   return (
     <div className="map-placeholder">
-      <MapContainer center={center as [number, number]} zoom={12} style={{ height: '100%', width: '100%' }}>
+      <MapContainer center={center as [number, number]} zoom={12} style={{ height: 420, width: '100%' }}>
         <TileLayer
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
