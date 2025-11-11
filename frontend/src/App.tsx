@@ -116,7 +116,7 @@ export default function App(): JSX.Element {
   return (
     <div className="app-root app-with-sidebar">
       <header>
-        <h1>Registro de Baches — Mockup (React + Vite)</h1>
+        <h1>Registro de Baches — Yucatán</h1>
         <div className="auth-area">Usuario: <strong>{auth.user}</strong> <button onClick={handleLogout}>Salir</button></div>
       </header>
 
