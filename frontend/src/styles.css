@@ -6,6 +6,8 @@
 *{box-sizing:border-box}
 body{font-family:Inter,Segoe UI,Arial;background:var(--bg);color:var(--fg);margin:0;padding:0}
 .app-root{max-width:1000px;margin:24px auto;padding:16px}
+/* prevent horizontal scroll across the app */
+html, body, .app-root, .workspace { overflow-x: hidden; }
 header h1{font-size:1.2rem;margin:0 0 12px}
 main{display:flex;gap:16px}
 .left{flex:1}
@@ -33,8 +35,17 @@ input[type="file"]{margin-top:6px}
 .form-error{background:#000;color:#fff;padding:6px;margin-bottom:8px}
 .location{font-size:0.9rem;color:var(--muted);margin-top:6px}
 .photo-thumb img{max-width:120px;height:auto;border:1px solid #000;margin-top:6px;cursor:pointer}
-.image-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:24px}
+.image-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:24px;z-index:9999}
 .image-modal img{max-width:100%;max-height:100%;border:4px solid #fff}
+.status-badge{padding:4px 8px;border-radius:6px;background:#eee;color:#222;font-weight:700;font-size:0.75rem}
+.status-badge.reported{background:#ffd; color:#444}
+.status-badge.in_progress{background:#def; color:#045}
+.status-badge.resolved{background:#e6f6e9; color:#0b672a}
+.comments{margin-top:6px;color:#222}
+.address{font-size:0.95rem;color:#444;margin-top:6px}
+.image-row .photo-thumb img{max-width:140px;height:auto;border:1px solid #ddd;background:#fff}
+.report-controls select{padding:6px;border:1px solid #ddd;border-radius:6px}
+.report-controls small{color:var(--muted);font-size:0.85rem}
 .selected-location{margin-top:8px;padding:8px;border:1px dashed #000}
 .selected-location.muted{color:var(--muted);font-size:0.95rem}
 .map-placeholder{width:100%}
@@ -70,21 +81,32 @@ input[type="file"]{margin-top:6px}
 .form-actions button{padding:8px 14px}
 
 /* Auth card styles */
-.auth-page{display:flex;align-items:center;justify-content:center;height:80vh}
-.auth-card{width:420px;border:1px solid #ddd;padding:18px;background:#fff}
-.auth-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.auth-header h3{margin:0}
+.auth-page{display:flex;align-items:center;justify-content:center;height:88vh;padding:18px}
+.auth-card{width:360px;border:1px solid #e6e6e6;padding:22px;background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(25,25,25,0.06)}
+.auth-header{display:flex;flex-direction:column;justify-content:center;align-items:center;margin-bottom:14px;gap:6px}
+.auth-header h3{margin:0;text-align:center;font-weight:700}
 .muted{color:var(--muted);font-size:0.9rem}
 .link{background:none;border:none;color:#19b5a7;cursor:pointer;padding:0}
 .auth-body{padding:6px 0}
-.auth-form{display:flex;flex-direction:column;gap:10px}
-.input{padding:10px;border:1px solid #ccc}
-.checkbox{font-size:0.9rem}
-.primary-btn{background:#19b5a7;color:#fff;border:none;padding:12px;font-weight:700;cursor:pointer}
+.auth-form{display:flex;flex-direction:column;gap:12px}
+.input{padding:12px;border:1px solid #e0e0e0;border-radius:6px;background:#fafafa}
+.checkbox{font-size:0.95rem;display:flex;align-items:center;gap:8px}
+.primary-btn{background:#14b39a;color:#fff;border:none;padding:12px 14px;font-weight:700;cursor:pointer;border-radius:6px;width:100%;box-shadow:0 2px 0 rgba(0,0,0,0.04)}
 .auth-footer{text-align:center;margin-top:10px}
-.auth-card .form-error{background:#f8d7da;color:#842029;padding:8px;margin-bottom:8px;border:1px solid #f5c2c7}
+.auth-card .form-error{background:#f8d7da;color:#842029;padding:8px;margin-bottom:8px;border:1px solid #f5c2c7;border-radius:6px}
 
-.auth-logo{display:block;margin:0 auto 8px;width:78px;height:78px}
+.auth-logo{display:block;margin:0 auto 4px;width:200px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
+
+/* Password row: keep button flush to the right */
+.password-row{display:flex;gap:8px}
+.password-row input{flex:1}
+.small{background:#f0f0f0;color:#333;padding:8px;border:1px solid #ddd;cursor:pointer;border-radius:6px}
+.small:active{transform:translateY(1px)}
+.show-btn{min-width:84px;padding:8px 10px}
+
+/* Muted text and footer link centered */
+.auth-footer{text-align:center;margin-top:12px}
+.auth-footer .link{color:#0b7b6f}
 
 /* Sidebar layout */
 .app-with-sidebar .workspace{display:flex;gap:16px}
@@ -108,18 +130,32 @@ input[type="file"]{margin-top:6px}
 
 /* Report section: two-column layout (list left, map right) */
 .report-section{display:flex;gap:16px;align-items:flex-start}
-.report-list-column{flex:1;min-width:200px;max-height:calc(100vh - 220px);overflow:auto;padding-right:8px}
-.report-map-column{width:640px;min-width:320px;max-width:48%}
+.report-list-column{flex:1;min-width:200px;max-height:calc(100vh - 220px);overflow-y:auto;overflow-x:hidden;padding-right:8px}
+.report-map-column{
+  /* make the map column responsive but allow the placeholder to control aspect */
+  flex: 0 0 48%;
+  width: 48%;
+  max-width: 640px;
+  box-sizing: border-box;
+}
+
 .report-map-column .map-placeholder{
-  /* make the map square and larger */
   width:100%;
-  aspect-ratio: 1 / 1; /* keeps it perfectly square */
-  max-height: calc(100vh - 200px);
+  /* enforce square using aspect-ratio, but cap with max-height to avoid overflow */
+  aspect-ratio: 1 / 1;
+  max-height: calc(100vh - 160px);
+  height: auto;
   overflow:hidden;
   display:block;
+  max-width:100%;
+  box-sizing:border-box;
 }
-/* Ensure the Leaflet container fills the parent square */
-.report-map-column .map-placeholder .leaflet-container{height:100% !important;width:100% !important}
+
+/* Ensure the Leaflet container fills the parent area */
+.report-map-column .map-placeholder .leaflet-container{height:100% !important;width:100% !important;max-width:100%}
+
+/* Force report item text to wrap instead of expanding horizontally */
+.report-item, .report-item .desc, .report-item .address, .report-item .comments { word-break: break-word; overflow-wrap: anywhere; }
 
 /* Make the two-column layout responsive */
 @media (max-width:900px){

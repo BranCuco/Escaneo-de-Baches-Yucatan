@@ -42,8 +42,15 @@ export default function App(): JSX.Element {
         id: r.id,
         description: r.description || r.comments || '',
         severity: r.severity || 'medium',
+        status: r.status || 'reported',
+        comments: r.comments || '',
+        street: r.street || '',
+        neighborhood: r.neighborhood || '',
+        city: r.city || '',
+        state: r.state || r.stateName || '',
+        postalCode: r.postalCode || r.postal_code || '',
         location: r.location ? r.location : (r.latitude !== undefined && r.longitude !== undefined ? { lat: r.latitude, lng: r.longitude } : null),
-        photo: Array.isArray(r.images) && r.images.length ? r.images[0] : (r.photo || null),
+        images: Array.isArray(r.images) ? r.images : (r.photo ? [r.photo] : []),
         createdAt: r.createdAt || r.date || new Date().toISOString()
       }))
       setReports(normalized)
@@ -58,6 +65,27 @@ export default function App(): JSX.Element {
   }, [auth, loadReports])
 
   // report creation removed: dashboard is read-only and reads from API
+
+  // allow deleting reports (requires auth)
+  async function deleteReport(id: string) {
+    if (!auth) throw new Error('No autorizado')
+    try {
+      const token = auth.token
+      const res = await fetch(`${API_BASE}/reports/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (!res.ok) {
+        const body = await res.text().catch(() => null)
+        throw new Error(body || `Error ${res.status}`)
+      }
+      // refresh list
+      await loadReports()
+    } catch (e) {
+      console.error('Error deleting report', e)
+      throw e
+    }
+  }
 
   function setLocation(loc: Loc | null) {
     setSelectedLocation(loc)
@@ -98,14 +126,11 @@ export default function App(): JSX.Element {
         <main>
           {currentPage === 'reportes' && (
             <div className="content">
-              <h2>Reportes</h2>
-              <div className="controls">
-                <button onClick={() => setCurrentPage('reportes')}>Reload</button>
-              </div>
+              {/* removed Reload button per UX request; only the list is shown */}
               <div className="report-section">
                 {/* Dashboard is read-only: reports come from the database via API */}
                 <div className="report-list-column">
-                  <ReportList reports={reports} />
+                  <ReportList reports={reports} onDelete={deleteReport} />
                 </div>
                 <div className="report-map-column">
                   <MapPlaceholder reports={reports} selected={selectedLocation} onSelect={setLocation} />
